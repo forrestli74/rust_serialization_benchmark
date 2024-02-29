@@ -1,0 +1,25 @@
+{
+    "namespace": "avro.log",
+    "type": "record",
+    "name": "Logs",
+    "fields": [
+        {"name": "logs", "type": "array", "items": {
+            "type": "record",
+            "name": "Log",
+            "fields": [
+                {"name": "address", "type": "record", "fields": [
+                    {"name": "x0", "type": "int"},
+                    {"name": "x1", "type": "int"},
+                    {"name": "x2", "type": "int"},
+                    {"name": "x3", "type": "int"}
+                ]},
+                {"name": "identity", "type": "string"},
+                {"name": "userid", "type": "string"},
+                {"name": "date", "type": "string"},
+                {"name": "request", "type": "string"},
+                {"name": "code", "type": "int"},
+                {"name": "size", "type": "long"}
+            ]
+        }}
+    ]
+}

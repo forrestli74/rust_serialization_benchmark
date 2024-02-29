@@ -1,0 +1,23 @@
+{
+    "namespace": "avro.mesh",
+    "name": "Mesh",
+    "type": "record",
+    "fields": [{"name": "triangles", "type": "array", "items": {
+        "name": "Triangle",
+        "type": "record",
+        "fields": [
+            {"name": "v0", "type": {
+                "name": "Vector3",
+                "type": "record",
+                "fields": [
+                    {"name": "x", "type": "float"},
+                    {"name": "y", "type": "float"},
+                    {"name": "z", "type": "float"}
+                ]
+            }},
+            {"name": "v1", "type": "Vector3"},
+            {"name": "v2", "type": "Vector3"},
+            {"name": "normal", "type": "Vector3"}
+        ]
+    }}]
+}

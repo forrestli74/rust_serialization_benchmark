@@ -2,6 +2,8 @@
 pub mod bench_abomonation;
 #[cfg(feature = "alkahest")]
 pub mod bench_alkahest;
+#[cfg(feature = "apache-avro")]
+pub mod bench_avro;
 #[cfg(feature = "bincode")]
 pub mod bench_bincode;
 #[cfg(feature = "bincode1")]

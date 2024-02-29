@@ -22,6 +22,7 @@ use nanoserde::{DeBin, SerBin};
 use rand::Rng;
 #[cfg(feature = "rkyv")]
 use rkyv::Archived;
+use serde::de::Error;
 
 #[cfg(feature = "capnp")]
 use crate::bench_capnp;
@@ -29,7 +30,14 @@ use crate::bench_capnp;
 use crate::bench_flatbuffers;
 #[cfg(feature = "prost")]
 use crate::bench_prost;
-use crate::{generate_vec, Generate};
+use crate::{bench_avro, generate_vec, Generate};
+
+#[cfg(feature = "apache-avro")]
+pub static AVRO_SCHEMA: once_cell::sync::Lazy<apache_avro::Schema> = once_cell::sync::Lazy::new(|| {
+    let schema_str = include_str!("minecraft_savedata.avsc");
+    apache_avro::Schema::parse_str(schema_str).expect("Failed to parse Avro schema")
+});
+
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(feature = "abomonation", derive(abomonation_derive::Abomonation))]
@@ -491,6 +499,67 @@ impl Generate for Entity {
             silent: rng.gen_bool(0.5),
             glowing: rng.gen_bool(0.5),
         }
+    }
+}
+
+#[cfg(feature = "apache-avro")]
+static ENTITY_SCHEMA: once_cell::sync::Lazy<&'static apache_avro::Schema> = once_cell::sync::Lazy::new(|| {
+    bench_avro::get_schema_field(&AVRO_SCHEMA, "Entity")
+});
+
+#[cfg(feature = "apache-avro")]
+impl bench_avro::Serialize for Entity {
+    fn serialize(&self) -> Result<apache_avro::types::Value, apache_avro::Error> {
+        use apache_avro::to_value;
+        let mut record = apache_avro::types::Record::new(&ENTITY_SCHEMA).unwrap();
+        record.put("id", &*self.id);
+        record.put("pos", to_value(self.pos)?);
+        record.put("motion", to_value(self.motion)?);
+        record.put("rotation", to_value(self.rotation)?);
+        record.put("fall_distance", self.fall_distance);
+        record.put("fire", to_value(self.fire)?);
+        record.put("air", to_value(self.air)?);
+        record.put("on_ground", self.on_ground);
+        record.put("no_gravity", self.no_gravity);
+        record.put("invulnerable", self.invulnerable);
+        record.put("portal_cooldown", self.portal_cooldown);
+        record.put("uuid", bench_avro::uuid_slice_to_value(&self.uuid));
+        record.put("custom_name", to_value(&self.custom_name)?);
+        record.put("custom_name_visible", self.custom_name_visible);
+        record.put("silent", self.silent);
+        record.put("glowing", self.glowing);
+        Ok(record.into())
+    }
+}
+
+#[cfg(feature = "apache-avro")]
+impl TryFrom<apache_avro::types::Value> for Entity {
+    type Error = apache_avro::Error;
+
+    fn try_from(value: apache_avro::types::Value) -> Result<Self, Self::Error> {
+        use apache_avro::types::Value;
+        let record = match value {
+            Value::Record(r) => r,
+            _ => return Err(apache_avro::Error::custom("not a record")),
+        };
+        Ok(Entity {
+            id: record.get("id").unwrap().into_string()?,
+            pos: record.get("pos").unwrap().into()?,
+            motion: record.get("motion").unwrap().into()?,
+            rotation: record.get("rotation").unwrap().into()?,
+            fall_distance: record.get("fall_distance").unwrap().into_f64()? as f32,
+            fire: record.get("fire").unwrap().into_i32()? as u16,
+            air: record.get("air").unwrap().into_i32()? as u16,
+            on_ground: record.get("on_ground").unwrap().into_boolean()?,
+            no_gravity: record.get("no_gravity").unwrap().into_boolean()?,
+            invulnerable: record.get("invulnerable").unwrap().into_boolean()?,
+            portal_cooldown: record.get("portal_cooldown").unwrap().into_i32()?,
+            uuid: bench_avro::uuid_value_to_slice(record.get("uuid").unwrap())?,
+            custom_name: record.get("custom_name").unwrap().into_string().ok(),
+            custom_name_visible: record.get("custom_name_visible").unwrap().into_boolean()?,
+            silent: record.get("silent").unwrap().into_boolean()?,
+            glowing: record.get("glowing").unwrap().into_boolean()?,
+        })
     }
 }
 
@@ -1069,6 +1138,13 @@ impl Generate for Player {
             seen_credits: rng.gen_bool(0.5),
             recipe_book: RecipeBook::generate(rng),
         }
+    }
+}
+
+#[cfg(feature = "apache-avro")]
+impl bench_avro::Serialize for Player {
+    fn serialize(&self) -> Result<apache_avro::types::Value, apache_avro::Error> {
+        todo!()
     }
 }
 

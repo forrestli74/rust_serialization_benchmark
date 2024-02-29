@@ -27,7 +27,13 @@ use crate::bench_capnp;
 use crate::bench_flatbuffers;
 #[cfg(feature = "prost")]
 use crate::bench_prost;
-use crate::Generate;
+use crate::{bench_avro, Generate};
+
+#[cfg(feature = "apache-avro")]
+pub static AVRO_SCHEMA: once_cell::sync::Lazy<apache_avro::Schema> = once_cell::sync::Lazy::new(|| {
+    let schema_str = include_str!("mesh.avsc");
+    apache_avro::Schema::parse_str(schema_str).expect("Failed to parse Avro schema")
+});
 
 #[derive(Clone, Copy, PartialEq)]
 #[cfg_attr(feature = "abomonation", derive(abomonation_derive::Abomonation))]
@@ -289,6 +295,21 @@ const _: () = {
         }
     }
 };
+
+#[cfg(feature = "apache-avro")]
+impl bench_avro::Serialize for Mesh {
+    fn serialize(&self) -> Result<apache_avro::types::Value, apache_avro::Error> {
+        apache_avro::to_value(self)
+    }
+}
+#[cfg(feature = "apache-avro")]
+impl TryFrom<apache_avro::types::Value> for Mesh {
+    type Error = apache_avro::Error;
+    
+    fn try_from(value: apache_avro::types::Value) -> Result<Self, Self::Error> {
+        apache_avro::from_value(&value)
+    }
+}
 
 #[cfg(feature = "flatbuffers")]
 impl<'a> bench_flatbuffers::Serialize<'a> for Mesh {

@@ -4,6 +4,8 @@ use rand_pcg::Lcg64Xsh32;
 use rust_serialization_benchmark::bench_abomonation;
 #[cfg(feature = "alkahest")]
 use rust_serialization_benchmark::bench_alkahest;
+#[cfg(feature = "apache-avro")]
+use rust_serialization_benchmark::bench_avro;
 #[cfg(feature = "bincode")]
 use rust_serialization_benchmark::bench_bincode;
 #[cfg(feature = "bincode1")]
@@ -62,7 +64,7 @@ use rust_serialization_benchmark::bench_speedy;
 use rust_serialization_benchmark::generate_vec;
 
 fn bench_log(c: &mut Criterion) {
-    use rust_serialization_benchmark::datasets::log::{Log, Logs};
+    use rust_serialization_benchmark::datasets::log::{Log, Logs, AVRO_SCHEMA};
 
     const BENCH: &'static str = "log";
 
@@ -85,6 +87,8 @@ fn bench_log(c: &mut Criterion) {
             black_box(log.size);
         }
     });
+    #[cfg(feature = "apache-avro")]
+    bench_avro::bench(BENCH, c, &data, AVRO_SCHEMA);
 
     // Doesn't use a closure due to ICE in rustc. Probably related to https://github.com/rust-lang/rust/issues/86703
     #[cfg(feature = "alkahest")]
@@ -240,7 +244,7 @@ fn bench_log(c: &mut Criterion) {
 }
 
 fn bench_mesh(c: &mut Criterion) {
-    use rust_serialization_benchmark::datasets::mesh::{Mesh, Triangle};
+    use rust_serialization_benchmark::datasets::mesh::{Mesh, Triangle, AVRO_SCHEMA_STR};
 
     const BENCH: &'static str = "mesh";
 
@@ -269,6 +273,9 @@ fn bench_mesh(c: &mut Criterion) {
             black_box(&triangle.normal);
         }
     });
+
+    #[cfg(feature = "apache-avro")]
+    bench_avro::bench(BENCH, c, &data, AVRO_SCHEMA_STR);
 
     #[cfg(feature = "bincode1")]
     bench_bincode1::bench(BENCH, c, &data);
@@ -399,7 +406,7 @@ fn bench_mesh(c: &mut Criterion) {
 }
 
 fn bench_minecraft_savedata(c: &mut Criterion) {
-    use rust_serialization_benchmark::datasets::minecraft_savedata::{Player, Players};
+    use rust_serialization_benchmark::datasets::minecraft_savedata::{Player, Players, AVRO_SCHEMA_STR};
 
     const BENCH: &'static str = "minecraft_savedata";
 
@@ -427,6 +434,9 @@ fn bench_minecraft_savedata(c: &mut Criterion) {
             black_box(&player.game_type);
         }
     });
+
+    #[cfg(feature = "apache-avro")]
+    bench_avro::bench(BENCH, c, &data, AVRO_SCHEMA_STR);
 
     #[cfg(feature = "bincode1")]
     bench_bincode1::bench(BENCH, c, &data);

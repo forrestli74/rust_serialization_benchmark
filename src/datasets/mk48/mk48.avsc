@@ -1,0 +1,103 @@
+{
+    "namespace": "avro.minecraft_savedata",
+    "name": "Players",
+    "type": "array",
+    "default": [],
+    "items": {
+        "name": "Player",
+        "type": "record",
+        "fields": [
+            {"name": "game_type", "type": {
+                    "name": "GameType",
+                    "type": "enum",
+                    "symbols": [
+                        "SURVIVAL",
+                        "CREATIVE",
+                        "ADVENTURE",
+                        "SPECTATOR"
+                    ]
+            }},
+            {"name": "previous_game_type", "type": "GameType"},
+            {"name": "score", "type": "long"},
+            {"name": "dimension", "type": "string"},
+            {"name": "selected_item_slot", "type": "int"},
+            {"name": "selected_item", "type": {"name": "Item", "type": "record", "fields": [
+                {"name": "count", "type": "int"},
+                {"name": "slot", "type": "int"},
+                {"name": "id", "type": "string"}
+            ]}},
+            {"name": "spawn_dimension", "type": ["null", "string"]},
+            {"name": "spawn_x", "type": "long"},
+            {"name": "spawn_y", "type": "long"},
+            {"name": "spawn_z", "type": "long"},
+            {"name": "spawn_forced", "type": ["null", "boolean"]},
+            {"name": "sleep_timer", "type": "int"},
+            {"name": "food_exhaustion_level", "type": "float"},
+            {"name": "food_saturation_level", "type": "float"},
+            {"name": "food_tick_timer", "type": "int"},
+            {"name": "xp_level", "type": "int"},
+            {"name": "xp_p", "type": "float"},
+            {"name": "xp_total", "type": "int"},
+            {"name": "xp_seed", "type": "int"},
+            {"name": "inventory", "type": "array", "items": "Item"},
+            {"name": "ender_items", "type": "array", "items": "Item"},
+            {"name": "abilities", "type": { "name": "Abilities", "type": "record", "fields": [
+                {"name": "walk_speed", "type": "float"},
+                {"name": "fly_speed", "type": "float"},
+                {"name": "may_fly", "type": "boolean"},
+                {"name": "flying", "type": "boolean"},
+                {"name": "invulnerable", "type": "boolean"},
+                {"name": "may_build", "type": "boolean"},
+                {"name": "instabuild", "type": "boolean"}
+            ]}},
+            {"name": "entered_nether_position", "type": ["null", {"name": "Vector3d", "type": "record", "fields": [
+                {"name": "x", "type": "double"},
+                {"name": "y", "type": "double"},
+                {"name": "z", "type": "double"}
+            ]}]},
+            {"name": "root_vehicle", "type": ["null", {"name": "Vehicle", "type": "record", "fields": [
+                {"name": "uuid", "type": {"name": "Uuid", "type": "record", "fields": [
+                    {"name": "x0", "type": "int"},
+                    {"name": "x1", "type": "int"},
+                    {"name": "x2", "type": "int"},
+                    {"name": "x3", "type": "int"}
+                ]}},
+                {"name": "entity", "type": {"name": "Entity", "type": "record", "fields": [
+                    {"name": "id", "type": "string"},
+                    {"name": "pos", "type": "Vector3d"},
+                    {"name": "motion", "type": "Vector3d"},
+                    {"name": "rotation", "type": {"name": "Vector2f", "fields": [
+                        {"name": "x", "type": "float"},
+                        {"name": "y", "type": "float"}
+                    ]}},
+                    {"name": "fall_distance", "type": "float"},
+                    {"name": "fire", "type": "int"},
+                    {"name": "air", "type": "int"},
+                    {"name": "on_ground", "type": "boolean"},
+                    {"name": "no_gravity", "type": "boolean"},
+                    {"name": "invulnerable", "type": "boolean"},
+                    {"name": "portal_cooldown", "type": "int"},
+                    {"name": "uuid", "type": "Uuid"},
+                    {"name": "custom_name", "type": ["null", "string"]},
+                    {"name": "custom_name_visible", "type": "boolean"},
+                    {"name": "silent", "type": "boolean"},
+                    {"name": "glowing", "type": "boolean"}
+                ]}}
+            ]}]},
+            {"name": "shoulder_entity_left", "type": ["null", "Entity"]},
+            {"name": "shoulder_entity_right", "type": ["null", "Entity"]},
+            {"name": "seen_credits", "type": "boolean"},
+            {"name": "recipe_book", "type": {"name": "RecipeBook", "type": "record", "fields": [
+                {"name": "recipies", "type": "array", "items": "string"},
+                {"name": "to_be_displayed", "type": "array", "items": "string"},
+                {"name": "is_gui_open", "type": "boolean"},
+                {"name": "is_furnace_filtering_craftable", "type": "boolean"},
+                {"name": "is_furnace_gui_open", "type": "boolean"},
+                {"name": "is_blasting_furname_filtering_craftable", "type": "boolean"},
+                {"name": "is_blasting_furnace_gui_open", "type": "boolean"},
+                {"name": "is_smoker_filtering_craftable", "type": "boolean"},
+                {"name": "is_smoker_gui_open", "type": "boolean"}
+            ]}}
+        ]
+    }
+}
